@@ -11,6 +11,7 @@ from torch import Tensor
 class Encoder(nn.Module):
     def __init__(self,
                  input_dim: int,
+                 num_layers: int,
                  emb_dim: int,
                  enc_hid_dim: int,
                  dec_hid_dim: int,
@@ -25,7 +26,7 @@ class Encoder(nn.Module):
 
         self.embedding = nn.Embedding(input_dim, emb_dim)
 
-        self.rnn = nn.GRU(emb_dim, enc_hid_dim, bidirectional = True)
+        self.rnn = nn.GRU(emb_dim, enc_hid_dim, num_layers, bidirectional = True)
 
         self.fc = nn.Linear(enc_hid_dim * 2, dec_hid_dim)
 
@@ -84,7 +85,7 @@ class Decoder(nn.Module):
                  enc_hid_dim: int,
                  dec_hid_dim: int,
                  dropout: int,
-                 attention: nn.Module):
+                 attn_dim: int):
         super().__init__()
 
         self.emb_dim = emb_dim
@@ -92,7 +93,7 @@ class Decoder(nn.Module):
         self.dec_hid_dim = dec_hid_dim
         self.output_dim = output_dim
         self.dropout = dropout
-        self.attention = attention
+        self.attention = Attention(enc_hid_dim, dec_hid_dim, attn_dim)
 
         self.embedding = nn.Embedding(output_dim, emb_dim)
 
@@ -150,6 +151,7 @@ class Decoder(nn.Module):
 class Seq2Seq(nn.Module):
     def __init__(self,
                 input_dim: int,
+                enc_num_layers: int,
                 enc_emb_dim: int,
                 enc_hid_dim: int,
                 enc_dropout: int,
@@ -161,9 +163,10 @@ class Seq2Seq(nn.Module):
                 device: torch.device):
         super().__init__()
 
-        self.encoder = Encoder(input_dim, enc_emb_dim, enc_hid_dim, dec_hid_dim, enc_dropout)
-        self.attn = Attention(enc_hid_dim, dec_hid_dim, attn_dim)
-        self.decoder = Decoder(output_dim, dec_emb_dim, enc_hid_dim, dec_hid_dim, dec_dropout, self.attn)
+        self.encoder = Encoder(input_dim, enc_num_layers, enc_emb_dim, enc_hid_dim, dec_hid_dim, enc_dropout)
+        
+        self.decoder = Decoder(output_dim, dec_emb_dim, enc_hid_dim, dec_hid_dim, dec_dropout, attn_dim)
+        
         self.device = device
 
     def forward(self,
