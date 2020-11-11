@@ -1,3 +1,15 @@
+"""
+INFO2049-1: Practical project: Machine translation 1
+Authors: Folon Nora, Tahiraj Arian
+Parts of the code are inspired from:
+    - Title: Torchtext translation tutorial
+      Authors: Seith Weidman
+      Availability: https://github.com/pytorch/tutorials/blob/master/beginner_source/torchtext_translation_tutorial.py
+    - Title: Pytorch Seq2Seq
+      Authors: Ben Trevett
+      Availability: https://github.com/bentrevett/pytorch-seq2seq
+"""
+
 import random
 from typing import Tuple
 
@@ -11,14 +23,41 @@ from torchtext.vocab import Vectors
 
 
 class Encoder(nn.Module):
+    """ Encoder class representing the many to one encoding for the translation
+
+    Coutains 3 layers:
+    - 1 embedding layer
+    - 1 LSTM
+    - 1 dropout layer
+    """
+
     def __init__(
             self,
-            emb_dim,
-            emb_vectors,
-            input_dim,
-            hid_dim,
-            n_layers,
-            dropout):
+            emb_dim: int,
+            emb_vectors: Vectors,
+            input_dim: int,
+            hid_dim: int,
+            n_layers: int,
+            dropout: float):
+        """ Create an encoder object
+
+        :param emb_dim: Embedding dimension
+        :type emb_dim: int
+        :param emb_vectors: Embedding vectors
+        :type emb_vectors: torchtext.vocab.Vectors
+        :param input_dim: Input dimension of the LSTM
+        :type input_dim: int
+        :param hid_dim: Size of hidden states of the LSTM (of c and h, not
+            concatenated)
+        :type hid_dim: int
+        :param n_layers: Number of layers of the LSTM
+        :type n_layers: int
+        :param dropout: Probability of an element to be zeroed for the dropout
+            and LSTM layer
+        :type dropout: float
+
+        :rtype: Encoder
+        """
         super().__init__()
 
         self.hid_dim = hid_dim
@@ -31,8 +70,17 @@ class Encoder(nn.Module):
 
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, src):
+    def forward(self, src: Tensor):
+        """ Forwards and element through the layers
 
+        :param src: Input tensor
+        :type src: torch.Tensor
+
+        :return: Returns a tuple containing the outputs and the hidden states
+            of the LSTM
+            (see https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html)
+        :rtype: tuple
+        """
         # src = [src len, batch size]
 
         embedded = self.dropout(self.embedding(src))
@@ -51,14 +99,43 @@ class Encoder(nn.Module):
 
 
 class Decoder(nn.Module):
+    """ Encoder class representing the one to many decoding for the translation
+
+    Coutains 3 layers:
+    - 1 embedding layer
+    - 1 LSTM
+    - 1 fully connected layer
+    - 1 dropout layer
+    """
+
     def __init__(
             self,
-            emb_dim,
-            emb_vectors,
-            output_dim,
-            hid_dim,
-            n_layers,
-            dropout):
+            emb_dim: int,
+            emb_vectors: int,
+            output_dim: int,
+            hid_dim: int,
+            n_layers: int,
+            dropout: float):
+        """ Create a decoder object
+
+        :param emb_dim: Embedding dimension
+        :type emb_dim: int
+        :param emb_vectors: Embedding vectors
+        :type emb_vectors: torchtext.vocab.Vectors
+        :param output_dim: Input dimension of the LSTM and output dimension of
+            the fully connected layer
+        :type output_dim: int
+        :param hid_dim: Size of hidden states of the LSTM (of c and h, not
+            concatenated)
+        :type hid_dim: int
+        :param n_layers: Number of layers of the LSTM
+        :type n_layers: int
+        :param dropout: Probability of an element to be zeroed for the dropout
+            and LSTM layer
+        :type dropout: float
+
+        :rtype: Decoder
+        """
         super().__init__()
 
         self.output_dim = output_dim
@@ -74,8 +151,19 @@ class Decoder(nn.Module):
 
         self.dropout = nn.Dropout(dropout)
 
-    def forward(self, input, encoder_outputs):
+    def forward(self, input: Tensor, encoder_outputs: Tensor):
+        """ Forwards and element through the layers
 
+        :param src: Input tensor
+        :type src: torch.Tensor
+        :param encoder_outputs: Hidden states of the encoder
+        :type encoder_outputs: Tensor
+
+        :return: Returns a tuple containing the outputs and the hidden states
+            of the LSTM
+            (see https://pytorch.org/docs/stable/generated/torch.nn.LSTM.html)
+        :rtype: tuple
+        """
         # input = [batch size]
         # hidden = [n layers * n directions, batch size, hid dim]
         # cell = [n layers * n directions, batch size, hid dim]
@@ -111,10 +199,17 @@ class Decoder(nn.Module):
 
 
 class Seq2Seq(nn.Module):
+    """ Seq2Seq class implementing a machine translation
+
+    Coutains 3 layers:
+    - 1 encoder
+    - 1 decoder
+    """
+
     def __init__(self,
-                 emb_dim,
-                 src_vectors,
-                 trg_vectors,
+                 emb_dim: int,
+                 src_vectors: Vectors,
+                 trg_vectors: Vectors,
                  hid_dim: int,
                  n_layers: int,
                  input_dim: int,
@@ -122,6 +217,36 @@ class Seq2Seq(nn.Module):
                  output_dim: int,
                  dec_dropout: float,
                  device: torch.device):
+        """ Create a decoder object
+
+        :param emb_dim: Embedding dimension
+        :type emb_dim: int
+        :param src_vectors: Embedding vectors of the source language
+        :type src_vectors: torchtext.vocab.Vectors
+        :param trg_vectors: Embedding vectors of the target language
+        :type trg_vectors: torchtext.vocab.Vectors
+        :param hid_dim: Size of hidden states of the LSTMs (of c and h, not
+            concatenated)
+        :type hid_dim: int
+        :param n_layers: Number of layers of the LSTMs
+        :type n_layers: int
+        :param input_dim: Input dimension of the encoder's LSTM
+        :type input_dim: int
+        :param enc_dropout: Probability of an element to be zeroed for the
+            dropout layers of the ecoder
+        :type enc_dropout: float
+        :param output_dim: Input dimension of the decoder's LSTM and output
+            dimension of the decoder's fully connected layer
+        :type output_dim: int
+        :param dec_dropout: Probability of an element to be zeroed for the
+            dropout layers of the decoder
+        :type dec_dropout: float
+        :param device: Device on which the model will run
+        :type device: torch.device
+
+        :rtype: Seq2Seq
+        """
+
         super().__init__()
 
         self.encoder = Encoder(
@@ -141,13 +266,22 @@ class Seq2Seq(nn.Module):
         self.device = device
 
     def forward(self, src, trg, teacher_forcing_ratio=0.5):
+        """ Forwards and element through the layers
 
+        :param src: Input tensor
+        :type src: torch.Tensor
+        :param trg: Target Sentence (for training)
+        :type trg: torch.Tensor
+        :param teacher_forcing_ratio: Probability to use teacher forcing
+            e.g. if teacher_forcing_ratio is 0.75 we use ground-truth inputs 75%
+            of the time
+        :type teacher_forcing_ratio: float
+
+        :return: The translated sentence
+        :rtype: Tensor
+        """
         # src = [src len, batch size]
         # trg = [trg len, batch size]
-        # teacher_forcing_ratio is probability to use teacher forcing
-        # e.g. if teacher_forcing_ratio is 0.75 we use ground-truth inputs 75%
-        # of the time
-
         batch_size = trg.shape[1]
         trg_len = trg.shape[0]
         trg_vocab_size = self.decoder.output_dim
