@@ -15,7 +15,7 @@ Other pretrained embeddings are downloadable through the torchtext library direc
 The dataset and all the word embeddings used in this project may be manually downloaded [here](https://www.dropbox.com/s/lfzx0190ibz4dwx/text-translation.tar.gz?dl=1). Extract this archive in the local repository.
 
 Or do it manually through the command line:
-cd to yourlocal repository
+cd to your local repository
 ```sh
 cd <local_repository>
 ```
