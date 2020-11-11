@@ -1,21 +1,20 @@
-# Mode
+# Mode, test or train
 TEST = False
 
 # Paths
-SAVE = "./weights.pt" # Where to save weights for training
-LOAD = "./weights.pt" # Weights to load for testing
+SAVE = "./test.pt"
+LOAD = "./xxx.pt"  # Weights to load for testing
+
+# Embedding type
+EMB = "w2v"
+EMB_SIZE = 200 # For GloVe
 
 # Training config
 BATCH_SIZE = 128
 N_EPOCHS = 10
 
 # Archtecture config
-ATTN = True # include attention mechanism or not
-ENC_NUM_LAYERS = 2
-ENC_EMB_DIM = 256
-DEC_EMB_DIM = 256
-ENC_HID_DIM = 512
-DEC_HID_DIM = 512
-ATTN_DIM = 64
-ENC_DROPOUT = 0.5
-DEC_DROPOUT = 0.5
+N_LAYERS = 4
+HID_DIM = 512
+ENC_DROPOUT = 0
+DEC_DROPOUT = 0
