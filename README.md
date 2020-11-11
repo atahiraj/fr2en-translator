@@ -1,77 +1,65 @@
-# Text Translation
+# French-to-English Translator
 
-> Project for the INFO2049-1 course of the ULiege University under the supervision of Professor Ittoo.
+## About
 
-This project consists in a simple machine translation task.
+This repository contains a sequence-to-sequence neural machine translation
+project for translating French text into English. It uses an LSTM
+encoder-decoder model, the French-English
+[Multi30k dataset](https://github.com/multi30k/dataset), and pretrained
+FastText, GloVe, or Word2Vec embeddings. Evaluation reports loss, perplexity,
+and BLEU score.
 
-The dataset is the [French-English Multi30k dataset](https://github.com/multi30k/dataset)
-and the Word2Vec embeddings may be found [here](https://wikipedia2vec.github.io/wikipedia2vec/pretrained/).
-
-Other pretrained embeddings are downloadable through the torchtext library directly.
+The project was developed for the University of Liège INFO2049-1 course and
+targets the 2020-era PyTorch and TorchText APIs captured in `environment.yml`.
 
 ## Setup
 
-### Download embedding vectors and dataset
-The dataset and all the word embeddings used in this project may be manually downloaded [here](https://www.dropbox.com/s/lfzx0190ibz4dwx/text-translation.tar.gz?dl=1). Extract this archive in the local repository.
+Create the pinned Conda environment:
 
-Or do it manually through the command line:
-cd to your local repository
 ```sh
-cd <local_repository>
-```
-Download the archive with curl
-```sh
-curl -L -o <archive_name>.tar.gz https://www.dropbox.com/s/lfzx0190ibz4dwx/text-translation.tar.gz?dl=1
-```
-Extract the archive
-```sh
-tar -xf <archive_name>.tar.gz
-```
-You can then remove the archive
-```sh
-rm <archive_name>.tar.gz
+conda env create -f environment.yml
+conda activate text-translation
 ```
 
-### Setup environment
-Make sure you have an anaconda installation working on your machine.
+Install the English and French models expected by the pinned spaCy release:
 
-The different packages needed are listed in the file `environment.yml` which can be used to create a new environment with the following instruction 
 ```sh
-conda env create -f environment.yml -n <env_name>
+python -m spacy download en
+python -m spacy download fr
 ```
 
-Activate the environment
-```sh
-conda activate <env_name>
+Multi30k and the selected FastText or GloVe vectors are downloaded by
+TorchText when the program first runs. Word2Vec mode instead expects these
+files in `.vector_cache/`:
+
+```text
+.vector_cache/enwiki_20180420_300d.txt
+.vector_cache/frwiki_20180420_300d.txt
 ```
 
-Install spacy models
+## Usage
+
+Set the experiment options in `config.py`:
+
+- `TEST` selects training (`False`) or evaluation (`True`).
+- `SAVE` is the checkpoint written during training.
+- `LOAD` is the checkpoint loaded during evaluation.
+- `EMB` selects `fasttext`, `glove`, or `word2vec`.
+- `BATCH_SIZE`, `N_EPOCHS`, `N_LAYERS`, and `HID_DIM` configure training and
+  the model architecture.
+- `ENC_DROPOUT`, `DEC_DROPOUT`, and `FREEZE` configure regularization and
+  embedding updates.
+
+Run the configured experiment with:
+
 ```sh
-python -m spacy download en && python -m spacy download fr
+python main.py
 ```
 
-## Usage 
+The program automatically uses CUDA when it is available and otherwise runs
+on the CPU.
 
-The entrypoint for training and testing is `main.py`.
+## License
 
-### Configuration
-
-The `config.py` file contains the architecture configuration as well as other hyperparameters.
-- `TEST`: set to `True` for testing a model and to `False` otherwise
-- `SAVE`: specify under which name the weights should be saved (irrelevant if `TEST` is set to `True`)
-- `LOAD`: specify a path for a checkpoint to continue training or to test (relevant only if `TEST` is set to `True`)
-- `EMB`: specify the word embeddings to be used (`FastText`, `GloVe` or `Word2Vec`, case insensitive)
-- `BATCH_SIZE`: specify the batch size
-- `N_EPOCHS`: specify the number of epochs
-- `N_LAYERS`: specify the number of layers of both LSTMs of the encoder and decoder
-- `HID_DIM`: specify the hidden state dimension of both LSTMs of the encoder and decoder. Note that it correspondes to the size of `h` and `c`, unconcatenated
-- `ENC_DROPOUT`: dropout probability of the encoder
-- `DEC_DROPOUT`: dropout probability of the decoder
-- `FREEZE`: set to `True` to freeze the embedding layers during training and to `False` otherwise
-
-### Train and test
-Once the file `config.py` has been modified, just run
-```sh
-python3 main.py
-```
-
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for the
+complete terms.
