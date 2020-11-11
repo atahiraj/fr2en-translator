@@ -11,11 +11,11 @@ TrainAcc5 = []
 ValLoss = []
 ValAcc1 =[]
 ValAcc5 = []
-names = ['Train Loss: ','Train Acc 1:  ','Train Acc 5:  ','Valid Loss: ','Valid Acc 1:  ','Valid Acc 5:  ']
-titles = ['Training Loss','Top-1 Training Accuracy ','Top-5 Training Accuracy','Validation Loss','Top-1 Validation Accuracy','Top-5 Validation Accuracy']
-nb = 29
-epch = 20
-models = np.arange(nb)
+names = ['Train Loss: ','Train PPL: ', 'Val. Loss: ','Val. PPL: ']
+titles = ['Training Loss','Training Perplexity ', 'Validation Loss','Validation Perplexity']
+nb = 3
+epch = 50
+models = ['FastText', 'GloVe', 'Word2Vec']
 epochs = np.arange(epch)
 
 t=0
@@ -23,7 +23,7 @@ for n in names:
     i=-1
     plt.figure()
     for filename in os.listdir('.'):
-        if filename.endswith('.log'):
+        if filename.endswith('.txt'):
             with open(os.path.join('.', filename)) as f:
                 i=i+1
                 TrainLoss=np.empty((nb, epch))
