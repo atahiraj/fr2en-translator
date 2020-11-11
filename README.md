@@ -14,8 +14,8 @@ Other pretrained embeddings are downloadable through the torchtext library direc
 ### Download embedding vectors and dataset
 The dataset and all the word embeddings used in this project may be manually downloaded [here](https://www.dropbox.com/s/lfzx0190ibz4dwx/text-translation.tar.gz?dl=1). Extract this archive in the local repository.
 
-Or do it manually through the command line: 
-dd to yourlocal repository
+Or do it manually through the command line:
+cd to yourlocal repository
 ```sh
 cd <local_repository>
 ```
@@ -35,7 +35,7 @@ rm <archive_name>.tar.gz
 ### Setup environment
 Make sure you have an anaconda installation working on your machine.
 
-The different packages needed are listed in the file `environment.yml` which can be used to create a new environment with the following instructions: 
+The different packages needed are listed in the file `environment.yml` which can be used to create a new environment with the following instruction 
 ```sh
 conda env create -f environment.yml -n <env_name>
 ```
