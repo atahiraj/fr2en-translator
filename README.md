@@ -20,9 +20,14 @@ The different packages needed are listed in the file `environment.yml` which can
 conda env create -f environment.yml -n <env_name>
 ```
 
-To activate the environment, run
+Activate the environment
 ```sh
 conda activate <env_name>
+```
+
+Install spacy models
+```sh
+python -m spacy download en && python -m spacy download fr
 ```
 
 ## Usage 
