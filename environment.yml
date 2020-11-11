@@ -78,10 +78,4 @@ dependencies:
   - zipp=3.4.0=pyhd3eb1b0_0
   - zlib=1.2.11=h7b6447c_3
   - zstd=1.4.5=h9ceee32_0
-  - pip:
-    - autopep8==1.5.4
-    - de-core-news-sm==2.3.0
-    - en-core-web-sm==2.3.1
-    - fr-core-news-sm==2.3.0
-    - pycodestyle==2.6.0
-    - toml==0.10.2
+
