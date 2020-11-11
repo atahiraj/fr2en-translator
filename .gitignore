@@ -1,4 +1,10 @@
 .data
+.vector_cache
+*.txt
+*.pt
+*.zip
+*.tar.gz
+graphs
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
